@@ -1,0 +1,5 @@
+C:\Users\stw\Desktop\stwApps\faApp\platforms\android\build\intermediates\classes\debug
+C:\Users\stw\Desktop\stwApps\faApp\platforms\android\build\intermediates\pre-dexed\debug\sqlite-connector-a7eb31dd985f919f4f85162220e38c152bf4fc86.jar
+C:\Users\stw\Desktop\stwApps\faApp\platforms\android\build\intermediates\pre-dexed\debug\classes-34110bab648fb92fed0f52d6455d40e9343a8e33.jar
+C:\Users\stw\Desktop\stwApps\faApp\platforms\android\build\intermediates\pre-dexed\debug\com.google.zxing.client.android.captureactivity-545c910bcb2856372d621b20a61aaee8a20f731c.jar
+C:\Users\stw\Desktop\stwApps\faApp\platforms\android\build\intermediates\pre-dexed\debug\sqlite-native-driver-6cefdfc909ebd0455b4e843c977d737db33ac979.jar

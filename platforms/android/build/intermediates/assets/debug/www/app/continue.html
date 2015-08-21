@@ -1,0 +1,27 @@
+<ion-view view-title="Scan Barcode">
+  <ion-content>
+  	<div class="list card">
+  		<div class="item item-avatar">
+		    <img src="img/BluetoothScanner.jpg">
+		    <h2>USB/Bluetooth Scanner</h2>
+		    <p>Click settings to change</p>
+		  </div>
+		</div>
+  	<div class="row">
+  		<div class="col col-100">
+				<button class="button button-block button-positive" ng-click="scanBarcode();" ng-hide="inputBarcode">
+				Scan
+				</button>
+				<div class="list card" ng-show="inputBarcode">
+				  <label class="item item-input">
+				    <input type="text" placeholder="Input Barcode" ng-model="barcode" show-focus="inputBarcode">
+				  </label>
+				</div>
+				<button class="button button-block button-positive" ng-show="inputBarcode" ng-click="submitScan(barcode);">
+				Finish
+				</button>
+			</div> <!--end of col -->
+		</div> <!-- end of row -->
+	</div>
+  </ion-content>
+</ion-view>

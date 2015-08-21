@@ -1,0 +1,33 @@
+<ion-view view-title="Send Inventory">
+  <ion-content>
+  <form name="emailForm" novalidate="" ng-submit="sendEmail(email)"> 
+	  	<div class="list">
+			  <label class="item item-input item-stacked-label">
+			    <span class="input-label">Destination address:</span>
+			    <input type="email" placeholder="jwilliams@stwinc.net" ng-model="email.destination">
+			  </label>
+			  <label class="item item-input item-stacked-label">
+			    <span class="input-label">Email Subject</span>
+			    <input type="text" placeholder="Fixed Asset Inventory" ng-model="email.subject">
+			  </label>
+			  <label class="item item-input item-stacked-label">
+			    <span class="input-label">Email body</span>
+			    <!-- <input type="text" placeholder="I have attached the Fixed Assed Inventory"> -->
+			     <textarea placeholder="I have attached the Fixed Assed Inventory" ng-model="email.body"></textarea>
+			  </label>
+			</div>
+			<div class="row">
+		  	<div class="col">
+		  		<button class="button button-block button-dark" ng-click="cancel()">
+				  Cancel
+					</button>
+		  	</div>
+		  	<div class="col">
+		  		<button class="button button-block button-dark" type="submit">
+				  Send File
+					</button>
+		  	</div>
+		  </div>
+	  </form>
+  </ion-content>
+</ion-view>

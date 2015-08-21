@@ -1,0 +1,39 @@
+<ion-view view-title="Asset Details">
+  <ion-content>
+  	<div class="list">
+		  <label class="item item-input">
+		    <span class="input-label">Date</span>
+		    <input type="date" ng-model="date" required>
+		  </label>
+		  <label class="item item-input">
+		    <span class="input-label">Location</span>
+		    <input type="text" ng-model="location" required>
+		  </label>
+		  <label class="item item-input">
+		    <span class="input-label">User</span>
+		    <input type="text" ng-model="user" required>
+		  </label>
+		  <label class="item item-input">
+		    <span class="input-label">Comments</span>
+		    <input type="text" ng-model="comment">
+		  </label>
+		  <label class="item item-input">
+		    <span class="input-label">Barcode</span>
+		    <input type="text" value="{{barcode}}" readonly>
+		  </label>
+		  <div class="row">
+		  	<div class="col">
+		  		<button class="button button-block button-dark" ng-click="cancel()">
+				  Cancel
+				</button>
+		  	</div>
+		  	<div class="col">
+		  		<button class="button button-block button-dark" ng-click="submitAsset(barcode, location, comment, date, user)">
+				  Add to file
+				</button>
+		  	</div>
+		  </div>
+		  
+		</div>
+  </ion-content>
+</ion-view>

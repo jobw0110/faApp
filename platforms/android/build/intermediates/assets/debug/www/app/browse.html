@@ -1,5 +1,20 @@
-<ion-view view-title="Fixed Assets Inventory">
+<ion-view view-title="Browse Files">
   <ion-content>
+  	<div class="row">
+  		<div class="col">
+  			<div class="list">
 
+				  <div class="item item-divider">
+				    Files in '{{browse}}'
+				  </div>
+
+				  <a class="item item-icon-left" href="#" ng-repeat="file in files" ng-click="show('{{file.name}}')">
+				    <i class="icon ion-folder dark"></i>
+				    {{file.name}}
+				  </a>
+				</div>
+  		</div>
+  	</div>
+		  	
   </ion-content>
 </ion-view>

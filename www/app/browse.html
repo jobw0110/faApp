@@ -8,7 +8,7 @@
 				    Files in '{{browse}}'
 				  </div>
 
-				  <a class="item item-icon-left" href="#" ng-repeat="file in files" ng-click="show()">
+				  <a class="item item-icon-left" href="#" ng-repeat="file in files" ng-click="show('{{file.name}}')">
 				    <i class="icon ion-folder dark"></i>
 				    {{file.name}}
 				  </a>

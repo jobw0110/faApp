@@ -21,4 +21,4 @@
           android:paddingBottom="@dimen/half_padding"
           android:enabled="false"
           android:singleLine="true"/>
-<!-- From: file:/C:/Users/stw/Desktop/stwApps/faApp/platforms/android/res/layout/search_book_contents_header.xml -->
+<!-- From: file:/C:/Users/stw/Desktop/faApp/platforms/android/res/layout/search_book_contents_header.xml -->

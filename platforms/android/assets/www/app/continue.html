@@ -1,12 +1,12 @@
 <ion-view view-title="Scan Barcode">
   <ion-content>
-  	<div class="list card">
+  	<div class="list card" ng-show="inputBarcode">
   		<div class="item item-avatar">
 		    <img src="img/BluetoothScanner.jpg">
 		    <h2>USB/Bluetooth Scanner</h2>
 		    <p>Click settings to change</p>
-		  </div>
 		</div>
+	</div>
   	<div class="row">
   		<div class="col col-100">
 				<button class="button button-block button-positive" ng-click="scanBarcode();" ng-hide="inputBarcode">

@@ -2,11 +2,11 @@
 <items version="2" >
 
     <item
-        jar="C:\Users\stw\Desktop\stwApps\faApp\platforms\android\build\intermediates\exploded-aar\android\CordovaLib\unspecified\debug\classes.jar"
+        jar="C:\Users\stw\Desktop\faApp\platforms\android\libs\sqlite-native-driver.jar"
         jumboMode="false"
         revision="22.0.1"
-        sha1="f0bfe4981819ddb48b0c6111d17e3e4fb324c2e5">
-        <dex dex="C:\Users\stw\Desktop\stwApps\faApp\platforms\android\build\intermediates\pre-dexed\debug\classes-34110bab648fb92fed0f52d6455d40e9343a8e33.jar" />
+        sha1="21e1864f4da0a023b711602fd7ac6d15cfb5f2c7">
+        <dex dex="C:\Users\stw\Desktop\faApp\platforms\android\build\intermediates\pre-dexed\debug\sqlite-native-driver-dbd925c36f6a942582cb92128fd691ec4540b553.jar" />
     </item>
     <item
         jar="C:\Users\stw\Desktop\stwApps\faApp\platforms\android\libs\sqlite-connector.jar"
@@ -21,6 +21,34 @@
         revision="22.0.1"
         sha1="daca75b7de34e1ca229682f2cd54b54e1c324be6">
         <dex dex="C:\Users\stw\Desktop\stwApps\faApp\platforms\android\build\intermediates\pre-dexed\debug\com.google.zxing.client.android.captureactivity-545c910bcb2856372d621b20a61aaee8a20f731c.jar" />
+    </item>
+    <item
+        jar="C:\Users\stw\Desktop\stwApps\faApp\platforms\android\build\intermediates\exploded-aar\android\CordovaLib\unspecified\debug\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="f0bfe4981819ddb48b0c6111d17e3e4fb324c2e5">
+        <dex dex="C:\Users\stw\Desktop\stwApps\faApp\platforms\android\build\intermediates\pre-dexed\debug\classes-34110bab648fb92fed0f52d6455d40e9343a8e33.jar" />
+    </item>
+    <item
+        jar="C:\Users\stw\Desktop\faApp\platforms\android\libs\com.google.zxing.client.android.captureactivity.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="daca75b7de34e1ca229682f2cd54b54e1c324be6">
+        <dex dex="C:\Users\stw\Desktop\faApp\platforms\android\build\intermediates\pre-dexed\debug\com.google.zxing.client.android.captureactivity-c999fb134be39cb667dad96a759c6e90bde39271.jar" />
+    </item>
+    <item
+        jar="C:\Users\stw\Desktop\faApp\platforms\android\build\intermediates\exploded-aar\android\CordovaLib\unspecified\debug\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="a7af83f10554be76cd0b89ad720b980eb44a7f8b">
+        <dex dex="C:\Users\stw\Desktop\faApp\platforms\android\build\intermediates\pre-dexed\debug\classes-5c4aa3f242753553123b8bde688665f6fa9b5562.jar" />
+    </item>
+    <item
+        jar="C:\Users\stw\Desktop\faApp\platforms\android\libs\sqlite-connector.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="74cbd33faef2706f8fd2c2677cde8b63621b42d3">
+        <dex dex="C:\Users\stw\Desktop\faApp\platforms\android\build\intermediates\pre-dexed\debug\sqlite-connector-6437499e5ebff870524a3c05a83734f6262410b0.jar" />
     </item>
     <item
         jar="C:\Users\stw\Desktop\stwApps\faApp\platforms\android\libs\sqlite-native-driver.jar"

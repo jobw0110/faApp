@@ -1,6 +1,6 @@
 <ion-view view-title="Send Inventory">
   <ion-content>
-  <form name="emailForm" novalidate="" ng-submit="sendEmail(email)"> 
+  <form name="emailForm" novalidate ng-submit="sendEmail(email)"> 
 	  	<div class="list">
 			  <label class="item item-input item-stacked-label">
 			    <span class="input-label">Destination address:</span>
@@ -20,12 +20,14 @@
 		  	<div class="col">
 		  		<button class="button button-block button-dark" ng-click="cancel()">
 				  Cancel
-					</button>
+				</button>
 		  	</div>
 		  	<div class="col">
-		  		<button class="button button-block button-dark" type="submit">
+		  		<button class="button button-block button-dark" type="submit"
+		  			ng-disabled="addForm.email.$invalid || 
+			  				addForm.subject.$invalid || addForm.body.$invalid">
 				  Send File
-					</button>
+				</button>
 		  	</div>
 		  </div>
 	  </form>

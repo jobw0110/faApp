@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/C:/Users/stw/Desktop/stwApps/faApp/platforms/android/res/values-hi/strings.xml -->
+    <!-- From: file:/C:/Users/stw/Desktop/faApp/platforms/android/res/values-hi/strings.xml -->
     <eat-comment/>
     <string name="app_picker_name">अनुप्रयोगों</string>
     <string name="bookmark_picker_name">बुकमार्क्स</string>

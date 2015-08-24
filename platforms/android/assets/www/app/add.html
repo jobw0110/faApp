@@ -3,23 +3,23 @@
   	<div class="list">
 		  <label class="item item-input">
 		    <span class="input-label">Date</span>
-		    <input type="date" ng-model="date" required>
+		    <input type="date" ng-model="asset.date" required>
 		  </label>
 		  <label class="item item-input">
 		    <span class="input-label">Location</span>
-		    <input type="text" ng-model="location" required>
+		    <input type="text" ng-model="asset.location" required>
 		  </label>
 		  <label class="item item-input">
 		    <span class="input-label">User</span>
-		    <input type="text" ng-model="user" required>
+		    <input type="text" ng-model="asset.user" required>
 		  </label>
 		  <label class="item item-input">
 		    <span class="input-label">Comments</span>
-		    <input type="text" ng-model="comment">
+		    <input type="text" ng-model="asset.comment">
 		  </label>
 		  <label class="item item-input">
 		    <span class="input-label">Barcode</span>
-		    <input type="text" value="{{barcode}}" readonly>
+		    <input type="text" ng-model="asset.id" readonly>
 		  </label>
 		  <div class="row">
 		  	<div class="col">
@@ -28,7 +28,7 @@
 				</button>
 		  	</div>
 		  	<div class="col">
-		  		<button class="button button-block button-dark" ng-click="submitAsset(barcode, location, comment, date, user)">
+		  		<button class="button button-block button-dark" ng-click="submitAsset()">
 				  Add to file
 				</button>
 		  	</div>

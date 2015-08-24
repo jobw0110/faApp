@@ -100,4 +100,4 @@
         android:summary="@string/preferences_try_bsplus_summary"/>
   </PreferenceCategory>
 </PreferenceScreen>
-<!-- From: file:/C:/Users/stw/Desktop/stwApps/faApp/platforms/android/res/xml/preferences.xml -->
+<!-- From: file:/C:/Users/stw/Desktop/faApp/platforms/android/res/xml/preferences.xml -->

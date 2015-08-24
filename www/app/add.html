@@ -1,39 +1,55 @@
 <ion-view view-title="Asset Details">
   <ion-content>
-  	<div class="list">
-		  <label class="item item-input">
-		    <span class="input-label">Date</span>
-		    <input type="date" ng-model="date" required>
-		  </label>
-		  <label class="item item-input">
-		    <span class="input-label">Location</span>
-		    <input type="text" ng-model="location" required>
-		  </label>
-		  <label class="item item-input">
-		    <span class="input-label">User</span>
-		    <input type="text" ng-model="user" required>
-		  </label>
-		  <label class="item item-input">
-		    <span class="input-label">Comments</span>
-		    <input type="text" ng-model="comment">
-		  </label>
-		  <label class="item item-input">
-		    <span class="input-label">Barcode</span>
-		    <input type="text" value="{{barcode}}" readonly>
-		  </label>
-		  <div class="row">
-		  	<div class="col">
-		  		<button class="button button-block button-dark" ng-click="cancel()">
-				  Cancel
-				</button>
+  	<form name="addForm" ng-submit="submitAsset()" novalidate>
+	  	<div class="list">
+			  <label class="item item-input">
+			    <span class="input-label">Date</span>
+			    <input type="date" name="date" ng-model="asset.date" required>
+			    <span style="color:red;position:relative;right:10px;" 
+			    ng-show="addForm.date.$dirty && addForm.date.$invalid">
+			    <i class="icon ion-alert"></i>
+			  	</span>
+			  </label>
+			  <label class="item item-input">
+			    <span class="input-label">Location</span>
+			    <input type="text" name="location" ng-model="asset.location" required>
+			    <span style="color:red;position:relative;right:10px;" 
+			    ng-show="addForm.location.$dirty && addForm.location.$invalid">
+			    <i class="icon ion-alert"></i>
+			  	</span>
+			  </label>
+			  <label class="item item-input">
+			    <span class="input-label">User</span>
+			    <input type="text" name="user" ng-model="asset.user" required>
+			    <span style="color:red;position:relative;right:10px;" 
+			    ng-show="addForm.user.$dirty && addForm.user.$invalid">
+			    <i class="icon ion-alert"></i>
+			  	</span>
+			  </label>
+			  <label class="item item-input">
+			    <span class="input-label">Comments</span>
+			    <input type="text" name="comment" ng-model="asset.comment">
+			  </label>
+			  <label class="item item-input">
+			    <span class="input-label">Barcode</span>
+			    <input type="text" name="id" ng-model="asset.id" readonly>
+			  </label>
+			  <div class="row">
+			  	<div class="col">
+			  		<button class="button button-block button-dark" ng-click="cancel()">
+					  Cancel
+					</button>
+			  	</div>
+			  	<div class="col">
+			  		<button class="button button-block button-dark" 
+			  			ng-disabled="addForm.location.$invalid || 
+			  				addForm.date.$invalid || addForm.user.$invalid">
+					  Add to file
+					</button>
+			  	</div>
 		  	</div>
-		  	<div class="col">
-		  		<button class="button button-block button-dark" ng-click="submitAsset(barcode, location, comment, date, user)">
-				  Add to file
-				</button>
-		  	</div>
-		  </div>
+		  </form>
 		  
-		</div>
+	</div>
   </ion-content>
 </ion-view>

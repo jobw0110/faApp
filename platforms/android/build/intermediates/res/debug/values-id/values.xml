@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/C:/Users/stw/Desktop/stwApps/faApp/platforms/android/res/values-id/strings.xml -->
+    <!-- From: file:/C:/Users/stw/Desktop/faApp/platforms/android/res/values-id/strings.xml -->
     <eat-comment/>
     <string name="app_picker_name">Aplikasi</string>
     <string name="bookmark_picker_name">Bookmarks</string>

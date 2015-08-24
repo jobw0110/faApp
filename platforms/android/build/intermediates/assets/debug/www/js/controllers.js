@@ -11,7 +11,186 @@ angular.module('fixedApp.controllers', [])
   };    
 })
 
-.controller('IndexCtrl', function($scope, $state, $stateParams, $ionicHistory, $ionicPopup, $cordovaFile) {
+.factory('$localStorage', ['$window', function($window) {
+  return {
+    set: function(key, value) {
+      $window.localStorage[key] = value;
+    },
+    get: function(key, defaultValue) {
+      return $window.localStorage[key] || defaultValue;
+    },
+    setObject: function(key, value) {
+      $window.localStorage[key] = JSON.stringify(value);
+    },
+    getObject: function(key) {
+      return JSON.parse($window.localStorage[key] || '{}');
+    }
+  }
+}])
+
+.factory("$fileFactory", function($q, $cordovaFile, $state, $filter, $ionicHistory) {
+
+    var File = function() { };
+
+    File.prototype = {
+
+        getEntries: function(path) {
+            var deferred = $q.defer();
+            window.resolveLocalFileSystemURL(path, function(fileSystem) {
+                var directoryReader = fileSystem.createReader();
+                directoryReader.readEntries(function(entries) {
+                    deferred.resolve(entries);
+                }, function(error) {
+                    deferred.reject(error);
+                });
+            }, function(error) {
+                deferred.reject(error);
+            });
+            return deferred.promise;
+        },
+
+        removeFile: function(path, relativePath) {
+          var deferred = $q.defer();
+          //to test errors
+          //relativePath = relativePath + "k";
+          window.resolveLocalFileSystemURL(path, function(fileSystem) {
+            fileSystem.getFile(relativePath, {create:false}, function(fileEntry){
+              fileEntry.remove(function(file){
+                  console.log("File removed!");
+                  deferred.resolve(file);
+              },function(error){
+                  console.log("error deleting the file " + error.code);
+                  deferred.reject(error);
+              });
+            },function(error){
+                  console.log("file does not exist");
+                  deferred.reject(error);
+            });
+          },function(error){
+              console.log(error.message);
+              deferred.reject(error);
+          });
+          return deferred.promise;
+        },
+
+        createNewFile: function() {
+
+          var path = cordova.file.externalRootDirectory + "StwFixed";
+          var file = "fa_data.csv";
+          var date = new Date();
+          var fileDate = $filter('date')(date, "yyyyMMdd_HHmmss");
+          
+          var newFile = "fa_data_" + fileDate + ".csv";
+
+          //alert(newFile); 
+
+          //rename file
+          $cordovaFile.moveFile(path, "fa_data.csv", path, newFile)
+            .then(function (success) {
+              // success
+              console.log("moveFile successful");
+
+              $cordovaFile.createFile(path, "fa_data.csv", false)
+                .then(function (success) {
+                  // success
+                  console.log("file: fa_data.csv created");
+                  Alert("New Inventory file was created.");
+                  $ionicHistory.nextViewOptions({
+                    disableBack: true
+                  });
+                  $state.go("app.continue");
+                }, function (error) {
+                  // error
+                  console.log("createFile error: " + error.message);
+                });
+
+            }, function (error) {
+              // error
+              console.log("moveFile error: " + error.message);
+            });
+
+        }, //end of createNewFile
+
+        checkDataFile: function() {
+
+          $cordovaFile.checkDir(cordova.file.externalRootDirectory, "StwFixed")
+          .then(function (success) 
+          {
+            // success
+            angular.forEach(success, function(value, index) {
+              console.log(index + ":" + value);
+            });
+            
+            console.log('the directory exists');
+
+          }, function (error) {
+            // error
+            console.log("checkDir error: " + error.message);
+            console.log('directory does not exist');
+
+            $cordovaFile.createDir(cordova.file.externalRootDirectory, "StwFixed", false)
+              .then(function (success) 
+              {
+                // success
+                angular.forEach(success, function(value, index) {
+                  console.log(index + ":" + value);
+                });
+
+                console.log("createDir success");
+              }, function (error) 
+              {
+                // error
+                console.log("createDir error: " + error.message);
+              });
+          }); //end of checkDir
+
+          //Create Inventory File
+          $cordovaFile.checkFile(cordova.file.externalRootDirectory + "StwFixed", "fa_data.csv")
+            .then(function (success) {
+              // success
+              console.log("file: fa_data.csv exists");
+            }, function (error) 
+            {
+              // error
+              console.log("checkFile error: " + error.message);
+
+              $cordovaFile.createFile(cordova.file.externalRootDirectory + "StwFixed", "fa_data.csv", false)
+                .then(function (success) {
+                  // success
+                  console.log("file: fa_data.csv created");
+                }, function (error) {
+                  // error
+                  console.log("createFile error: " + error.message);
+                });
+
+            });
+
+        }, //end of checkDataFile
+
+        insertLine: function(csv) {
+
+          var deferred = $q.defer();
+          $cordovaFile.writeExistingFile(cordova.file.externalRootDirectory + "StwFixed", "fa_data.csv", csv, {'append':true})
+            .then(function (success) {
+              // success
+              console.log("file write sucessful");
+              deferred.resolve('success');
+
+            }, function (error) {
+              // error
+              console.log("writeExistingFile error: " + error.message);
+              deferred.reject = error;
+            });
+            return deferred.promise;
+        }
+
+    }
+
+    return File;
+
+})
+
+.controller('AppCtrl', function($scope, $state, $stateParams, $ionicHistory, $ionicPopup, $cordovaFile, $fileFactory) {
 
   document.addEventListener("deviceready", function() {
 
@@ -20,58 +199,10 @@ angular.module('fixedApp.controllers', [])
       //alert(cordova.file.dataDirectory);
       //alert(cordova.file.externalRootDirectory);
 
-      // CHECK
-      $cordovaFile.checkDir(cordova.file.externalRootDirectory, "StwFixed")
-        .then(function (success) 
-        {
-          // success
-          angular.forEach(success, function(value, index) {
-            console.log(index + ":" + value);
-          });
-          
-          console.log('the directory exists');
+      var fs = new $fileFactory;
 
-        }, function (error) {
-          // error
-          console.log("checkDir error: " + error.message);
-          console.log('directory does not exist');
-
-          $cordovaFile.createDir(cordova.file.externalRootDirectory, "StwFixed", false)
-            .then(function (success) 
-            {
-              // success
-              angular.forEach(success, function(value, index) {
-                console.log(index + ":" + value);
-              });
-
-              console.log("createDir success");
-            }, function (error) 
-            {
-              // error
-              console.log("createDir error: " + error.message);
-            });
-        }); //end of checkDir
-
-        //Create Inventory File
-        $cordovaFile.checkFile(cordova.file.externalRootDirectory + "StwFixed", "fa_data.csv")
-          .then(function (success) {
-            // success
-            console.log("file: fa_data.csv exists");
-          }, function (error) 
-          {
-            // error
-            console.log("checkFile error: " + error.message);
-
-            $cordovaFile.createFile(cordova.file.externalRootDirectory + "StwFixed", "fa_data.csv", false)
-              .then(function (success) {
-                // success
-                console.log("file: fa_data.csv created");
-              }, function (error) {
-                // error
-                console.log("createFile error: " + error.message);
-              });
-
-          });
+      fs.checkDataFile();
+      
 
     } // end of if window.cordova
 
@@ -98,7 +229,9 @@ angular.module('fixedApp.controllers', [])
 
         console.log('You are sure');
 
-        $scope.routeTo("app.continue");
+        var fs = new $fileFactory
+
+        fs.createNewFile();
 
       } else {
         console.log('You are not sure');
@@ -108,7 +241,7 @@ angular.module('fixedApp.controllers', [])
 
 })
 
-.controller('HomeCtrl', function($scope, $state, $stateParams, $ionicHistory, $ionicPopup, $cordovaFile, $filter) {
+.controller('HomeCtrl', function($scope, $state, $stateParams, $ionicHistory, $ionicPopup, $cordovaFile, $fileFactory) {
 
   $scope.routeTo = function(route){
     
@@ -131,35 +264,9 @@ angular.module('fixedApp.controllers', [])
 
         console.log('You are sure');
 
-        var path = cordova.file.externalRootDirectory + "StwFixed";
-        var file = "fa_data.csv";
-        var date = new Date();
-        var fileDate = $filter('date')(date, "MMddyyyy_HHmm");
-        
-        var newFile = "fa_data_" + fileDate + ".csv";
+        var fs = new $fileFactory();
 
-        alert(newFile); 
-
-        //rename file
-        $cordovaFile.moveFile(path, "fa_data.csv", path, newFile)
-          .then(function (success) {
-            // success
-            console.log("moveFile successful");
-
-            $cordovaFile.createFile(path, "fa_data.csv", false)
-              .then(function (success) {
-                // success
-                console.log("file: fa_data.csv created");
-                $scope.routeTo("app.continue");
-              }, function (error) {
-                // error
-                console.log("createFile error: " + error.message);
-              });
-
-          }, function (error) {
-            // error
-            console.log("moveFile error: " + error.message);
-          });
+        fs.createNewFile();
 
       } else {
         console.log('You are not sure');
@@ -318,7 +425,7 @@ angular.module('fixedApp.controllers', [])
 })
 
 .controller('AddCtrl', function($scope, $state, $stateParams, $cordovaSQLite, $ionicHistory, 
-  $filter, $cordovaFile, $ionicPopup) {
+  $filter, $cordovaFile, $ionicPopup, $fileFactory) {
   
   $scope.barcode = $stateParams.id;
   $scope.asset = null;
@@ -364,8 +471,8 @@ angular.module('fixedApp.controllers', [])
           disableBack: true
         });
 
-        //$state.go("app.continue");
-        $state.go("app.continue", {asset:null},  { reload: true });
+        $state.go("app.continue", {asset:null});
+        //$state.go("app.continue", {asset:null},  { reload: true });
       });
    };
 
@@ -403,23 +510,20 @@ angular.module('fixedApp.controllers', [])
 
         if(window.cordova) {
     
-          $cordovaFile.writeExistingFile(cordova.file.externalRootDirectory + "StwFixed", "fa_data.csv", csv, {'append':true})
-            .then(function (success) {
-              // success
-              console.log("file write sucessful");
+          var fs = new $fileFactory();
 
-              $scope.asset = asset;
-              console.log("write successfull scope asset set value: ");
-              angular.forEach($scope.asset, function(value, index) {
-                console.log(index + ":" + value);
-              });
+          fs.insertLine(csv).then(function(result){
 
-              $scope.showAlert($scope.asset);
-
-            }, function (error) {
-              // error
-              console.log("writeExistingFile error: " + error.message);
+            //alert('insert promise');
+            //$scope.asset = asset;
+            console.log("asset value: ");
+            angular.forEach(asset, function(value, index) {
+              console.log(index + ":" + value);
             });
+
+            $scope.showAlert(asset);
+
+          });
 
         }
         
@@ -465,5 +569,103 @@ angular.module('fixedApp.controllers', [])
        // user cancelled email
     });
   }
+
+}) //end of SendCtrl
+.controller('BrowseCtrl', function($scope, $state, $stateParams, $ionicHistory, $ionicPopup, $cordovaFile,
+  $ionicPlatform, $fileFactory, $ionicActionSheet, $timeout) {
+
+  alert("BrowseCtrl");
+  
+  var fs = new $fileFactory();
+
+  $ionicPlatform.ready(function() {
+
+    var path = cordova.file.externalRootDirectory + "StwFixed";
+
+    $scope.browse = path.replace("file:///", "")
+
+    console.log("browse folder revised: " + $scope.browse);
+      
+    fs.getEntries(path).then(function(result) {
+        $scope.files = result;
+
+        console.log('files: ');
+        angular.forEach($scope.files, function(value, index) {
+          console.log(index + ":" + value.name);
+          angular.forEach(value, function(val, ind) {
+            console.log(ind + ":" + val);
+          });
+        });
+    });
+  });
+
+  // Triggered on a button click, or some other target
+  $scope.show = function(fileName) {
+
+   // Show the action sheet
+   var hideSheet = $ionicActionSheet.show({
+     buttons: [
+       { text: '<i class="icon ion-ios-email positive"></i> Send' },
+     ],
+     destructiveText: '<i class="icon ion-ios-trash assertive"></i> Delete',
+     titleText: '<h4>Manage File</h4>',
+     cancelText: 'Cancel',
+     cancel: function() {
+          // add cancel code..
+        },
+     buttonClicked: function(index) {
+       console.log("index :" + index);
+       //send clicked
+
+     }, 
+     destructiveButtonClicked: function() {
+       $scope.showConfirm(fileName);
+      }
+   });
+
+   // For example's sake, hide the sheet after two seconds
+   $timeout(function() {
+     hideSheet();
+   }, 2000);
+
+  };
+
+  $scope.remove = function(file) {
+    
+    alert(file);
+
+    var fs = new $fileFactory();
+
+    var path = cordova.file.externalRootDirectory;
+
+    var relativePath = "StwFixed/" + file;
+
+    fs.removeFile(path, relativePath).then(function(result){
+      console.log("remove file result" + result);
+      $state.go("app.browse");
+    });
+  }; //end of function remove
+
+  $scope.showConfirm = function(file) {
+    var confirmPopup = $ionicPopup.confirm({
+      title: file,
+      template: 'Are you sure you want to delete this file?'
+    });
+
+     confirmPopup.then(function(res) {
+      if(res) {
+         console.log('Continue delete');
+         $scope.remove(file);
+
+      } else {
+        console.log('Cancel delete');
+      }
+    });
+  }; //end of showConfirm
+
+})
+
+.controller('SettingsCtrl', function($scope, $state, $stateParams, $ionicHistory, $ionicPopup, $cordovaFile,
+  $ionicPlatform, $ionicActionSheet, $timeout) {
 
 });

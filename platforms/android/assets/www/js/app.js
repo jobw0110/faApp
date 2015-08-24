@@ -2,7 +2,7 @@ var db = null;
 
 angular.module('fixedApp', ['ionic', 'ngCordova', 'fixedApp.controllers'])
 
-.run(function($ionicPlatform, $cordovaSQLite, $cordovaFile) {
+.run(function($ionicPlatform, $cordovaSQLite, $cordovaFile, $localStorage) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -26,7 +26,8 @@ angular.module('fixedApp', ['ionic', 'ngCordova', 'fixedApp.controllers'])
       db = window.openDatabase("my.db", "1.0", "My db", -1);
     }
 
-    query = "DROP TABLE fa_assets";
+    /*
+    query = "DROP TABLE IF EXISTS fa_assets";
     $cordovaSQLite.execute(db, query)
       .then(function(result){
         console.log('drop table fa_data success');
@@ -37,7 +38,7 @@ angular.module('fixedApp', ['ionic', 'ngCordova', 'fixedApp.controllers'])
         console.log("drop table fa_data error: " + error.message);
       });
 
-    /*query = "DROP TABLE fa_data";
+    query = "DROP TABLE IF EXISTS fa_data";
     $cordovaSQLite.execute(db, query)
       .then(function(result){
         console.log('drop table fa_data success');
@@ -47,7 +48,7 @@ angular.module('fixedApp', ['ionic', 'ngCordova', 'fixedApp.controllers'])
       }, function(error){
         console.log("drop table fa_data error: " + error.message);
       });
-
+    */
     query = "CREATE TABLE IF NOT EXISTS fa_assets (asset_id interger primary key, " +
                 "location text)";
     $cordovaSQLite.execute(db, query)
@@ -59,9 +60,9 @@ angular.module('fixedApp', ['ionic', 'ngCordova', 'fixedApp.controllers'])
       }, function(error){
         console.log(error);
       });
-  */
+  
 
-    query = "CREATE TABLE IF NOT EXISTS fa_data (asset_id interger primary key, " +
+    query = "CREATE TABLE IF NOT EXISTS fa_data (asset_id interger, " +
                 "location text, comment text, date text, user text)";
     $cordovaSQLite.execute(db, query)
       .then(function(result){
@@ -73,33 +74,67 @@ angular.module('fixedApp', ['ionic', 'ngCordova', 'fixedApp.controllers'])
         console.log("create table fa_data error: " + error.message);
       });
 
+    //Re-set Settings
+    //localStorage.removeItem("settings")
+
+    // Default Settings
+    if(localStorage.getItem("settings") == null)
+    {
+      var settings = {
+        "use_defaults": false,
+        "user": "",
+        "location": "",
+        "use_bluetooth": false,
+        "edit_after_scan": false
+      }
+
+      $localStorage.setObject("settings", settings);
+    }
+
+   console.log( "settings = " + localStorage.getItem("settings"));
+
+    settings = $localStorage.getObject("settings");
+
+    console.log("Settings : ");
+    angular.forEach(settings, function(value, index) {
+          console.log(index + ":" + value);
+    });
+
   });
 })
 
 .config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
   $stateProvider
 
-    .state('app', {
-    url: '/app',
+    .state('home', {
+    url: '/',
     abstract: true,
-    templateUrl: 'app/app.html'
+    templateUrl: 'home/index.html',
+    controller: 'AppCtrl'
   })
 
-  .state('app.home', {
-    url: '/home',
+  .state('home.home', {
+    url: 'home',
     views: {
-      'home-tab': {
-        templateUrl: 'app/home.html',
+      'mainContent': {
+        templateUrl: 'home/home.html',
         controller: 'HomeCtrl'
       }
     }
+  })
+
+  .state('app', {
+    url: '/app',
+    abstract: true,
+    templateUrl: 'app/app.html',
+    controller: 'AppCtrl'
   })
 
   .state('app.continue', {
     url: '/continue',
     params: {asset:null},
     views: {
-      'home-tab': {
+      'mainContent': {
         templateUrl: 'app/continue.html',
         controller: 'ContinueCtrl'
       }
@@ -109,17 +144,18 @@ angular.module('fixedApp', ['ionic', 'ngCordova', 'fixedApp.controllers'])
   .state('app.browse', {
       url: '/browse',
       views: {
-        'home-tab': {
+        'mainContent': {
           templateUrl: 'app/browse.html',
-          //controller: 'browseCtrl'
+          controller: 'BrowseCtrl'
         }
       }
     })
 
   .state('app.send', {
     url: '/send',
+    params: {file:null},
     views: {
-      'home-tab': {
+      'mainContent': {
         templateUrl: 'app/send.html',
         controller: 'SendCtrl'
       }
@@ -129,19 +165,9 @@ angular.module('fixedApp', ['ionic', 'ngCordova', 'fixedApp.controllers'])
   .state('app.add', {
     url: '/add/:id',
     views: {
-      'home-tab': {
+      'mainContent': {
         templateUrl: 'app/add.html',
         controller: 'AddCtrl'
-      }
-    }
-  })
-
-  .state('app.settings', {
-    url: '/settings',
-    views: {
-      'settings-tab': {
-        templateUrl: 'app/settings.html',
-        //controller: 'SettingsCtrl'
       }
     }
   });
@@ -150,6 +176,6 @@ angular.module('fixedApp', ['ionic', 'ngCordova', 'fixedApp.controllers'])
   $ionicConfigProvider.views.maxCache(0);
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/app/home');
-  //$urlRouterProvider.otherwise('/add');
+  $urlRouterProvider.otherwise('/home');
+  
 });

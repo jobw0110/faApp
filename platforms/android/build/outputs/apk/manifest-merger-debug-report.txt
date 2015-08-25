@@ -148,7 +148,11 @@ uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
 ADDED from AndroidManifest.xml:37:5
 	android:name
 		ADDED from AndroidManifest.xml:37:22
-uses-permission#android.permission.GET_ACCOUNTS
+uses-permission#android.permission.READ_EXTERNAL_STORAGE
 ADDED from AndroidManifest.xml:38:5
 	android:name
 		ADDED from AndroidManifest.xml:38:22
+uses-permission#android.permission.GET_ACCOUNTS
+ADDED from AndroidManifest.xml:39:5
+	android:name
+		ADDED from AndroidManifest.xml:39:22

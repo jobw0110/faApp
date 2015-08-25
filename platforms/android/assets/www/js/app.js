@@ -85,7 +85,7 @@ angular.module('fixedApp', ['ionic', 'ngCordova', 'fixedApp.controllers'])
         "use_defaults": false,
         "user": "",
         "location": "",
-        "use_bluetooth": false,
+        "use_bluetooth": true,
         "edit_after_scan": false
       }
 

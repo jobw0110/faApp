@@ -1,4 +1,4 @@
-<ion-view view-title="Scan Barcode">
+<ion-view hide-nav-bar="false" view-title="Scan Barcode">
   <ion-content>
   	<div class="list card" ng-show="inputBarcode">
   		<div class="item item-avatar">
@@ -9,17 +9,23 @@
 	</div>
   	<div class="row">
   		<div class="col col-100">
+  			<form name="continueForm" novalidate>
 				<button class="button button-block button-positive" ng-click="scanBarcode();" ng-hide="inputBarcode">
 				Scan
 				</button>
 				<div class="list card" ng-show="inputBarcode">
 				  <label class="item item-input">
-				    <input type="text" placeholder="Input Barcode" ng-model="barcode" show-focus="inputBarcode">
+				    <input type="number" name="barcode" placeholder="Input Barcode" ng-model="barcode" show-focus="inputBarcode" required>
 				  </label>
 				</div>
+				<span style="color:red;position:relative;left:10px;" 
+				    ng-show="continueForm.barcode.$dirty && continueForm.barcode.$error.number">
+				    <i class="icon ion-alert">&nbsp; Invalid Input</i>
+			  	  </span>
 				<button class="button button-block button-positive" ng-show="inputBarcode" ng-click="submitScan(barcode);">
 				Finish
 				</button>
+			</form>
 			</div> <!--end of col -->
 		</div> <!-- end of row -->
 	</div>

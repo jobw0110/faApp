@@ -49,6 +49,7 @@ angular.module('fixedApp', ['ionic', 'ngCordova', 'fixedApp.controllers'])
         console.log("drop table fa_data error: " + error.message);
       });
     */
+    
     query = "CREATE TABLE IF NOT EXISTS fa_assets (asset_id interger primary key, " +
                 "location text)";
     $cordovaSQLite.execute(db, query)

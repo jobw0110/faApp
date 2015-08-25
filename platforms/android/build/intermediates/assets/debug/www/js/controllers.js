@@ -28,7 +28,7 @@ angular.module('fixedApp.controllers', [])
   }
 }])
 
-.factory("$fileFactory", function($q, $cordovaFile, $state, $filter, $ionicHistory) {
+.factory("$fileFactory", function($q, $cordovaFile, $state, $filter, $ionicHistory, $cordovaSQLite) {
 
     var File = function() { };
 
@@ -75,7 +75,7 @@ angular.module('fixedApp.controllers', [])
 
         createNewFile: function() {
 
-          var path = cordova.file.externalRootDirectory + "StwFixed";
+          var path = cordova.file.dataDirectory + "StwFixed";
           var file = "fa_data.csv";
           var date = new Date();
           var fileDate = $filter('date')(date, "yyyyMMdd_HHmmss");
@@ -94,7 +94,20 @@ angular.module('fixedApp.controllers', [])
                 .then(function (success) {
                   // success
                   console.log("file: fa_data.csv created");
-                  Alert("New Inventory file was created.");
+                  alert("New Inventory file was created.");
+
+                  query = "DELETE * FROM TABLE fa_assets";
+                  
+                  /*$cordovaSQLite.execute(db, query)
+                    .then(function(result){
+                      console.log('empty table fa_assets success');
+                      angular.forEach(result, function(value, index) {
+                        console.log(index + ":" + value);
+                      });
+                    }, function(error){
+                      console.log("empty fa_assets table error: " + error.message);
+                    });*/
+
                   $ionicHistory.nextViewOptions({
                     disableBack: true
                   });
@@ -113,7 +126,7 @@ angular.module('fixedApp.controllers', [])
 
         checkDataFile: function() {
 
-          $cordovaFile.checkDir(cordova.file.externalRootDirectory, "StwFixed")
+          $cordovaFile.checkDir(cordova.file.dataDirectory, "StwFixed")
           .then(function (success) 
           {
             // success
@@ -128,7 +141,7 @@ angular.module('fixedApp.controllers', [])
             console.log("checkDir error: " + error.message);
             console.log('directory does not exist');
 
-            $cordovaFile.createDir(cordova.file.externalRootDirectory, "StwFixed", false)
+            $cordovaFile.createDir(cordova.file.dataDirectory, "StwFixed", false)
               .then(function (success) 
               {
                 // success
@@ -145,7 +158,7 @@ angular.module('fixedApp.controllers', [])
           }); //end of checkDir
 
           //Create Inventory File
-          $cordovaFile.checkFile(cordova.file.externalRootDirectory + "StwFixed", "fa_data.csv")
+          $cordovaFile.checkFile(cordova.file.dataDirectory + "StwFixed", "fa_data.csv")
             .then(function (success) {
               // success
               console.log("file: fa_data.csv exists");
@@ -154,7 +167,7 @@ angular.module('fixedApp.controllers', [])
               // error
               console.log("checkFile error: " + error.message);
 
-              $cordovaFile.createFile(cordova.file.externalRootDirectory + "StwFixed", "fa_data.csv", false)
+              $cordovaFile.createFile(cordova.file.dataDirectory + "StwFixed", "fa_data.csv", false)
                 .then(function (success) {
                   // success
                   console.log("file: fa_data.csv created");
@@ -170,7 +183,7 @@ angular.module('fixedApp.controllers', [])
         insertLine: function(csv) {
 
           var deferred = $q.defer();
-          $cordovaFile.writeExistingFile(cordova.file.externalRootDirectory + "StwFixed", "fa_data.csv", csv, {'append':true})
+          $cordovaFile.writeExistingFile(cordova.file.dataDirectory + "StwFixed", "fa_data.csv", csv, {'append':true})
             .then(function (success) {
               // success
               console.log("file write sucessful");
@@ -190,14 +203,23 @@ angular.module('fixedApp.controllers', [])
 
 })
 
-.controller('AppCtrl', function($scope, $state, $stateParams, $ionicHistory, $ionicPopup, $cordovaFile, $fileFactory) {
+.controller('AppCtrl', function($scope, $state, $stateParams, $ionicHistory, $ionicPopup, 
+  $cordovaFile, $localStorage, $fileFactory) {
+
+  $scope.settings = $localStorage.getObject('settings');
+
+  console.log("AppCtrl settings initialization : ");
+  angular.forEach($scope.settings, function(value, index){
+    console.log(index + ":" + value);
+  });
+
 
   document.addEventListener("deviceready", function() {
 
     if(window.cordova) {
 
       //alert(cordova.file.dataDirectory);
-      //alert(cordova.file.externalRootDirectory);
+      //alert(cordova.file.dataDirectory);
 
       var fs = new $fileFactory;
 
@@ -239,6 +261,27 @@ angular.module('fixedApp.controllers', [])
     });
   }
 
+  $scope.updateSettings = function(setting, settingValue){
+    var settings = $localStorage.getObject('settings');
+
+    /*angular.forEach(settings, function(value, index){
+      console.log(index + ":" + value);
+    });
+
+    alert('setting : ' + setting);
+    alert('setting value :' + settingValue);
+    */
+
+    settings[setting] = settingValue;
+
+    $localStorage.setObject('settings', settings);
+
+    console.log('updated settings :');
+    angular.forEach($localStorage.getObject('settings'), function(value, index){
+      console.log(index + ":" + value);
+    });
+  }
+
 })
 
 .controller('HomeCtrl', function($scope, $state, $stateParams, $ionicHistory, $ionicPopup, $cordovaFile, $fileFactory) {
@@ -277,29 +320,22 @@ angular.module('fixedApp.controllers', [])
 })
 
 .controller('ContinueCtrl', function($scope, $cordovaBarcodeScanner, $state, $stateParams,
- $cordovaSQLite, $ionicHistory, $cordovaFile, $filter, $ionicPopup) {
+ $cordovaSQLite, $ionicHistory, $cordovaFile, $filter, $ionicPopup, $localStorage, $fileFactory) {
 
   //alert('Continue Ctrl');
 
-  $scope.asset = null;
+  $scope.settings = $localStorage.getObject('settings');
 
-  $scope.bluetooth = true;
-  $scope.inputBarcode = false;
-  
-  
-  //$scope.editScan = false;
-  $scope.editScan = true;
+  $scope.asset = {};
 
+  $scope.bluetooth = $scope.settings.use_bluetooth;
+  
   //if bluetooth device is selected goto input view
-  if($scope.bluetooth)
-  {
-    $scope.inputBarcode = true;
-  }
+  $scope.inputBarcode = $scope.bluetooth;
+  
+  $scope.editScan = $scope.settings.edit_after_scan;
 
   //--------------------------All scope functions--------------------------------------
-  $scope.reset = function() {
-    $scope.barcode = null;
-  }
 
   $scope.showAlert = function(asset) {
       var alertPopup = $ionicPopup.alert({
@@ -313,6 +349,11 @@ angular.module('fixedApp.controllers', [])
      
       alertPopup.then(function(res) {
         console.log('popup success');
+        $ionicHistory.nextViewOptions({
+          disableBack: true
+        });
+
+        $state.go("app.continue", {asset:null});
       });
    };
 
@@ -349,72 +390,62 @@ angular.module('fixedApp.controllers', [])
     else
     {
       
-      $scope.asset = {"id": barcode, "location":"desk", "comment":"", "date":"08/18/2015", "user":"jwilliams"};
-      $scope.addAsset($scope.asset);
+      var date = new Date();
+    
+      date = $filter('date')(date, "MM/dd/yyyy");
+
+      $scope.asset = {"id": barcode, "location":$scope.settings.location, "comment":"", "date":date, "user":$scope.settings.user};
+      $scope.addAsset();
 
     }
     
   } // end of submit scan
 
-  $scope.addAsset = function(asset) {
+  $scope.addAsset = function() {
     //add asset to inventory file
     var query = "INSERT INTO fa_data (asset_id, location, comment, date, user) " + 
               "VALUES (?, ?, ?, ?, ?)";
 
-    console.log("date : " + asset.date);
-
-    var date = new Date(asset.date);
+    var date = $filter('date')($scope.asset.date, "MM/dd/yyyy");
     
-    date = $filter('date')(date, "MM/dd/yyyy");
     console.log("date : " + date);
 
-    //date = date.substring(0,10);
-    //date = date.replace("-","/");
-    asset.date = date;
+    console.log("asset:");
+    angular.forEach($scope.asset, function(value, index) {
+          console.log(index + ":" + value);
+    });
 
-
-    $cordovaSQLite.execute(db, query, [asset.id, asset.location, asset.comment, asset.date, asset.user])
+    $cordovaSQLite.execute(db, query, [$scope.asset.id, $scope.asset.location, $scope.asset.comment, date, $scope.asset.user])
       .then(function(result)
       {
         
         console.log("insert result: ");
+        console.log(result);
         angular.forEach(result, function(value, index) {
           console.log(index + ":" + value);
         });
 
-        console.log("date : " + asset.date);
-
-        var csv = asset.date + "," + asset.location + "," + asset.user + "," + asset.id + "," + asset.comment + "\n";
+        var csv = date + "," + $scope.asset.location + "," + 
+          $scope.asset.user + "," + $scope.asset.id + "," + $scope.asset.comment + "\n";
 
         console.log("csv text: " + csv);
 
         if(window.cordova) {
-    
-          $cordovaFile.writeExistingFile(cordova.file.externalRootDirectory + "StwFixed", "fa_data.csv", csv, {'append':true})
-            .then(function (success) {
-              // success
-              console.log("file write sucessful");
 
-              $scope.asset = asset;
-              console.log("write successfull scope asset set value: ");
-              angular.forEach($scope.asset, function(value, index) {
-                console.log(index + ":" + value);
-              });
+          var fs = new $fileFactory();
 
-              $scope.showAlert($scope.asset);
-              
-              $ionicHistory.nextViewOptions({
-                disableBack: true
-              });
-              console.log('going home');
-              $state.go("app.home");
-              
+          fs.insertLine(csv).then(function(result){
 
-            }, function (error) {
-              // error
-              console.log("writeExistingFile error: " + error.message);
+            //alert('insert promise');
+            //$scope.asset = asset;
+            console.log("asset value: ");
+            angular.forEach($scope.asset, function(value, index) {
+              console.log(index + ":" + value);
             });
 
+            $scope.showAlert();
+
+          });
         }
         
       }, function(error){
@@ -425,22 +456,33 @@ angular.module('fixedApp.controllers', [])
 })
 
 .controller('AddCtrl', function($scope, $state, $stateParams, $cordovaSQLite, $ionicHistory, 
-  $filter, $cordovaFile, $ionicPopup, $fileFactory) {
+  $filter, $cordovaFile, $ionicPopup, $fileFactory, $localStorage) {
+
+  $scope.settings = $localStorage.getObject('settings');
   
-  $scope.barcode = $stateParams.id;
-  $scope.asset = null;
+  $scope.asset = {
+    id:$stateParams.id,
+    date:new Date(),
+    location:"",
+    user:"",
+    comment:""
+  }
 
-  $scope.submitAsset = function(barcode, location, comment, date, user){
-    
-    $scope.asset = {"id": barcode, "location":location, "comment":comment, "date":date, "user":user};
+  if($scope.settings.use_defaults)
+  {
+    $scope.asset.location = $scope.settings.location;
+    $scope.asset.user = $scope.settings.user;
+  }
 
-    //alert(date);
+  $scope.submitAsset = function(){
+
+    alert('Submit Asset');
     console.log("AddCtrl insert data: ");
     angular.forEach($scope.asset, function(value, index) {
       console.log(index + ":" + value);
     });
 
-    $scope.addAsset($scope.asset);
+    $scope.addAsset();
           
     
   }
@@ -455,14 +497,14 @@ angular.module('fixedApp.controllers', [])
     //$state.go("app.continue", {},  { reload: true });
   }
 
-  $scope.showAlert = function(asset) {
+  $scope.showAlert = function() {
       var alertPopup = $ionicPopup.alert({
          title: 'Asset Added',
          template: '<div"><p>Asset Id: ' + asset.id + '</p>' +
-          '<p>Date: ' + asset.date + '</p>' + 
-          '<p>Location: ' + asset.location +'</p>' +
-          '<p>Comment: ' + asset.comment + '</p>' +
-          '<p>User: ' + asset.user + '</p></div>'
+          '<p>Date: ' + $filter('date')($scope.asset.date, "MM/dd/yyyy") + '</p>' + 
+          '<p>Location: ' + $scope.asset.location +'</p>' +
+          '<p>Comment: ' + $scope.asset.comment + '</p>' +
+          '<p>User: ' + $scope.asset.user + '</p></div>'
       });
      
       alertPopup.then(function(res) {
@@ -476,24 +518,16 @@ angular.module('fixedApp.controllers', [])
       });
    };
 
-   $scope.addAsset = function(asset) {
+   $scope.addAsset = function() {
     //add asset to inventory file
     var query = "INSERT INTO fa_data (asset_id, location, comment, date, user) " + 
               "VALUES (?, ?, ?, ?, ?)";
 
-    console.log("date : " + asset.date);
-
-    var date = new Date(asset.date);
+    var date = $filter('date')($scope.asset.date, "MM/dd/yyyy");
     
-    date = $filter('date')(date, "MM/dd/yyyy");
     console.log("date : " + date);
 
-    //date = date.substring(0,10);
-    //date = date.replace("-","/");
-    asset.date = date;
-
-
-    $cordovaSQLite.execute(db, query, [asset.id, asset.location, asset.comment, asset.date, asset.user])
+    $cordovaSQLite.execute(db, query, [$scope.asset.id, $scope.asset.location, $scope.asset.comment, date, $scope.asset.user])
       .then(function(result)
       {
         
@@ -502,9 +536,10 @@ angular.module('fixedApp.controllers', [])
           console.log(index + ":" + value);
         });
 
-        console.log("date : " + asset.date);
+        console.log("date : " + date);
 
-        var csv = asset.date + "," + asset.location + "," + asset.user + "," + asset.id + "," + asset.comment + "\n";
+        var csv = date + "," + $scope.asset.location + "," + 
+          $scope.asset.user + "," + $scope.asset.id + "," + $scope.asset.comment + "\n";
 
         console.log("csv text: " + csv);
 
@@ -514,14 +549,9 @@ angular.module('fixedApp.controllers', [])
 
           fs.insertLine(csv).then(function(result){
 
-            //alert('insert promise');
-            //$scope.asset = asset;
-            console.log("asset value: ");
-            angular.forEach(asset, function(value, index) {
-              console.log(index + ":" + value);
-            });
+            alert('insert promise');
 
-            $scope.showAlert(asset);
+            $scope.showAlert();
 
           });
 
@@ -534,9 +564,13 @@ angular.module('fixedApp.controllers', [])
 
 })
 
-.controller('SendCtrl', function($scope, $state, $stateParams, $cordovaEmailComposer) {
+.controller('SendCtrl', function($scope, $state, $stateParams, $cordovaEmailComposer, $ionicHistory) {
   
-  $scope.email = {destination:"", subject:"", body:""};
+  $scope.email = {
+    destination:"", 
+    subject:"Stw Fixed Assets Inventory", 
+    body:"attached: fa_data.csv"
+  };
 
   $scope.cancel = function() {
 
@@ -544,24 +578,31 @@ angular.module('fixedApp.controllers', [])
       disableBack: true
     });
 
-    $state.go("app.home");
+    $state.go("home.home");
 
   }
 
   $scope.sendEmail = function(email)
   {
     console.log(email);
-    alert(cordova.file.externalRootDirectory + "StwFixed/fa_data.csv");
-    var file = cordova.file.externalRootDirectory + "StwFixed/fa_data.csv";
+    alert(cordova.file.dataDirectory + "StwFixed/fa_data.csv");
+
+    if($stateParams.file == null )
+      var file = cordova.file.dataDirectory + "StwFixed/fa_data.csv";
+    else
+      var file = cordova.file.dataDirectory + "StwFixed/" + stateParams.file;
+
+
     var email = {
-      to: 'cbarber@stwinc.net',
+      //to: email.destination,
+      to: 'jwilliams@gmail.com',
       cc: 'jwilliams@gmail.com',
       bcc: null,
       attachments: [
         file
       ],
-      subject: 'Stw Fixed Asset Inventory',
-      body: "File created with the STW Fixed Asset Mobile App'",
+      subject: email.subject,
+      body: email.body,
       isHtml: true
     };
 
@@ -574,29 +615,33 @@ angular.module('fixedApp.controllers', [])
 .controller('BrowseCtrl', function($scope, $state, $stateParams, $ionicHistory, $ionicPopup, $cordovaFile,
   $ionicPlatform, $fileFactory, $ionicActionSheet, $timeout) {
 
-  alert("BrowseCtrl");
-  
-  var fs = new $fileFactory();
+  //alert("BrowseCtrl");
 
   $ionicPlatform.ready(function() {
 
-    var path = cordova.file.externalRootDirectory + "StwFixed";
+    var fs = new $fileFactory();
 
-    $scope.browse = path.replace("file:///", "")
+    if(window.cordova)
+    {
+      var path = cordova.file.dataDirectory + "StwFixed";
 
-    console.log("browse folder revised: " + $scope.browse);
-      
-    fs.getEntries(path).then(function(result) {
-        $scope.files = result;
+      $scope.browse = path.replace("file:///", "")
 
-        console.log('files: ');
-        angular.forEach($scope.files, function(value, index) {
-          console.log(index + ":" + value.name);
-          angular.forEach(value, function(val, ind) {
-            console.log(ind + ":" + val);
+      console.log("browse folder revised: " + $scope.browse);
+        
+      fs.getEntries(path).then(function(result) {
+          $scope.files = result;
+
+          console.log('files: ');
+          angular.forEach($scope.files, function(value, index) {
+            console.log(index + ":" + value.name);
+            angular.forEach(value, function(val, ind) {
+              console.log(ind + ":" + val);
+            });
           });
-        });
-    });
+      });
+    }
+      
   });
 
   // Triggered on a button click, or some other target
@@ -615,7 +660,10 @@ angular.module('fixedApp.controllers', [])
         },
      buttonClicked: function(index) {
        console.log("index :" + index);
-       //send clicked
+       $ionicHistory.nextViewOptions({
+        disableBack: true
+      });
+      $state.go("app.send", {file:fileName});
 
      }, 
      destructiveButtonClicked: function() {
@@ -636,13 +684,17 @@ angular.module('fixedApp.controllers', [])
 
     var fs = new $fileFactory();
 
-    var path = cordova.file.externalRootDirectory;
+    var path = cordova.file.dataDirectory;
 
     var relativePath = "StwFixed/" + file;
 
     fs.removeFile(path, relativePath).then(function(result){
       console.log("remove file result" + result);
-      $state.go("app.browse");
+      alert('file removed');
+      $ionicHistory.nextViewOptions({
+        disableBack: true
+      });
+      $state.go("home.home");
     });
   }; //end of function remove
 
@@ -662,10 +714,5 @@ angular.module('fixedApp.controllers', [])
       }
     });
   }; //end of showConfirm
-
-})
-
-.controller('SettingsCtrl', function($scope, $state, $stateParams, $ionicHistory, $ionicPopup, $cordovaFile,
-  $ionicPlatform, $ionicActionSheet, $timeout) {
 
 });

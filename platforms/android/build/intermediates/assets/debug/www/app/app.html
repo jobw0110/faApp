@@ -9,10 +9,10 @@
         </button>
       </ion-nav-buttons>
 
-      <ion-nav-buttons side="right">
+      <!-- <ion-nav-buttons side="right">
         <button class="button button-icon button-clear ion-gear-a" menu-toggle="right">
         </button>
-      </ion-nav-buttons>
+      </ion-nav-buttons> -->
 
     </ion-nav-bar>
     <ion-nav-view name="mainContent"></ion-nav-view>
@@ -25,7 +25,7 @@
     </header>
     <ion-content class="has-header">
           <ion-list>
-            <ion-item nav-clear="" menu-close="" class="item item-icon-left" ng-click="routeTo(&apos;app.home&apos;)">
+            <ion-item nav-clear="" menu-close="" class="item item-icon-left" ng-click="routeTo(&apos;home.home&apos;)">
               <i class="icon ion-ios-home-outline positive"></i>Home</ion-item>
             <ion-item nav-clear="" menu-close="" class="item item-icon-left" ng-click="routeTo(&apos;app.continue&apos;)">
               <i class="icon ion-ios-paper-outline positive"></i>Continue File
@@ -43,61 +43,75 @@
     </ion-content>
   </ion-side-menu>
 
-  <!-- Right menu -->
+  <!-- Right menu 
   <ion-side-menu side="right">
     <header class="bar bar-header bar-positive">
       <h1 class="title">Settings</h1>
     </header>
     <ion-content class="has-header">
 
-      <ul class="list">
-        <li class="item item-toggle">
-          <h3>USB/Bluetooth Scanner</h3>
-          <label class="toggle toggle-assertive">
-            <input type="checkbox" ng-change="alert('changed');">
+      <div class="list">
+          <div class="item item-toggle">
+          <h3>Use Bluetooth</h3>
+          <label class="toggle toggle-positive">
+            <input type="checkbox"
+              ng-model="settings.use_bluetooth" 
+              ng-checked="settings.use_bluetooth" 
+              ng-change="updateSettings('use_bluetooth', settings.use_bluetooth);">
             <div class="track">
               <div class="handle"></div>
             </div>
           </label>
-        </li>
+        </div>
+        
 
-        <li class="item item-toggle">
+        <div class="item item-toggle">
           <h3>Edit After Scan</h3>
           <label class="toggle toggle-positive">
-            <input type="checkbox">
+            <input type="checkbox"
+              ng-model="settings.edit_after_scan" 
+              ng-checked="settings.edit_after_scan" 
+              ng-change="updateSettings('edit_after_scan', settings.edit_after_scan);">
             <div class="track">
               <div class="handle"></div>
             </div>
           </label>
-        </li>
+        </div>
 
-        <li class="item item-toggle">
+        <div class="item item-toggle">
           <h3>Use Defaults</h3>
           <label class="toggle toggle-positive">
-            <input type="checkbox">
+            <input type="checkbox"
+              ng-model="settings.use_defaults" 
+              ng-checked="settings.use_defaults" 
+              ng-change="updateSettings('use_defaults', settings.use_defaults);">
             <div class="track">
               <div class="handle"></div>
             </div>
           </label>
-        </li>
+        </div>
 
         
 
-        <li class="item item-input">
+        <div class="item item-input">
           <span class="input-label">User</span>
-          <input type="text">
-        </li>
-        <li class="item item-input">
+          <input type="text" ng-model="settings.user" 
+              ng-change="updateSettings('user', settings.user);">
+        </div>
+        <div class="item item-input">
           <span class="input-label">Location</span>
-          <input type="text">
-        </li>
+          <input type="text" ng-model="settings.location" 
+              ng-change="updateSettings('location', settings.location);">
+        </div>
 
         
 
 
-      </ul>
+      </div>
+
 
     </ion-content>
+    -->
   </ion-side-menu>
 
 </ion-side-menus>

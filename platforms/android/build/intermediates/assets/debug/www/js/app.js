@@ -49,6 +49,7 @@ angular.module('fixedApp', ['ionic', 'ngCordova', 'fixedApp.controllers'])
         console.log("drop table fa_data error: " + error.message);
       });
     */
+    
     query = "CREATE TABLE IF NOT EXISTS fa_assets (asset_id interger primary key, " +
                 "location text)";
     $cordovaSQLite.execute(db, query)
@@ -75,14 +76,14 @@ angular.module('fixedApp', ['ionic', 'ngCordova', 'fixedApp.controllers'])
       });
 
     //Re-set Settings
-    localStorage.removeItem("settings")
+    //localStorage.removeItem("settings")
 
     // Default Settings
     if(localStorage.getItem("settings") == null)
     {
       var settings = {
         "use_defaults": false,
-        "username": "",
+        "user": "",
         "location": "",
         "use_bluetooth": false,
         "edit_after_scan": false
@@ -106,21 +107,28 @@ angular.module('fixedApp', ['ionic', 'ngCordova', 'fixedApp.controllers'])
 .config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
   $stateProvider
 
-    .state('app', {
+    .state('home', {
+    url: '/',
+    abstract: true,
+    templateUrl: 'home/index.html',
+    controller: 'AppCtrl'
+  })
+
+  .state('home.home', {
+    url: 'home',
+    views: {
+      'mainContent': {
+        templateUrl: 'home/home.html',
+        controller: 'HomeCtrl'
+      }
+    }
+  })
+
+  .state('app', {
     url: '/app',
     abstract: true,
     templateUrl: 'app/app.html',
     controller: 'AppCtrl'
-  })
-
-  .state('app.home', {
-    url: '/home',
-    views: {
-      'mainContent': {
-        templateUrl: 'app/home.html',
-        controller: 'HomeCtrl'
-      }
-    }
   })
 
   .state('app.continue', {
@@ -146,6 +154,7 @@ angular.module('fixedApp', ['ionic', 'ngCordova', 'fixedApp.controllers'])
 
   .state('app.send', {
     url: '/send',
+    params: {file:null},
     views: {
       'mainContent': {
         templateUrl: 'app/send.html',
@@ -162,22 +171,12 @@ angular.module('fixedApp', ['ionic', 'ngCordova', 'fixedApp.controllers'])
         controller: 'AddCtrl'
       }
     }
-  })
-
-  .state('app.settings', {
-    url: '/settings',
-    views: {
-      'mainContent': {
-        templateUrl: 'app/settings.html',
-        controller: 'SettingsCtrl'
-      }
-    }
   });
 
   $ionicConfigProvider.tabs.position('bottom'); // other values: top
   $ionicConfigProvider.views.maxCache(0);
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/app/home');
-  //$urlRouterProvider.otherwise('/add');
+  $urlRouterProvider.otherwise('/home');
+  
 });

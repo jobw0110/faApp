@@ -340,11 +340,11 @@ angular.module('fixedApp.controllers', [])
   $scope.showAlert = function(asset) {
       var alertPopup = $ionicPopup.alert({
          title: 'Asset Added',
-         template: '<div"><p>Asset Id: ' + asset.id + '</p>' +
-          '<p>Date: ' + asset.date + '</p>' + 
-          '<p>Location: ' + asset.location +'</p>' +
-          '<p>Comment: ' + asset.comment + '</p>' +
-          '<p>User: ' + asset.user + '</p></div>'
+         template: '<div"><p>Asset Id: ' + $scope.asset.id + '</p>' +
+          '<p>Date: ' + $filter('date')($scope.asset.date, "MM/dd/yyyy") + '</p>' + 
+          '<p>Location: ' + $scope.asset.location +'</p>' +
+          '<p>Comment: ' + $scope.asset.comment + '</p>' +
+          '<p>User: ' + $scope.asset.user + '</p></div>'
       });
      
       alertPopup.then(function(res) {
@@ -353,7 +353,8 @@ angular.module('fixedApp.controllers', [])
           disableBack: true
         });
 
-        $state.go("app.continue", {asset:null});
+        //$state.go("app.continue", {asset:null}, {reload:false});
+        $state.reload();
       });
    };
 
@@ -363,9 +364,13 @@ angular.module('fixedApp.controllers', [])
       .scan()
       .then(function(barcodeData) {
         // Success! Barcode data is here
-        console.log(barcodeData);
+        console.log("Camera barcodeData :");
+        angular.forEach(barcodeData, function(val, i){
+          console.log(i + ":" + val);
+        });
       }, function(error) {
         // An error occurred
+        console.log("Camera barcode scan error : " + error.message);
       })
   }
 
@@ -439,11 +444,11 @@ angular.module('fixedApp.controllers', [])
             //alert('insert promise');
             //$scope.asset = asset;
             console.log("asset value: ");
-            angular.forEach(asset, function(value, index) {
+            angular.forEach($scope.asset, function(value, index) {
               console.log(index + ":" + value);
             });
 
-            $scope.showAlert(asset);
+            $scope.showAlert();
 
           });
         }
@@ -474,19 +479,6 @@ angular.module('fixedApp.controllers', [])
     $scope.asset.user = $scope.settings.user;
   }
 
-  $scope.submitAsset = function(){
-
-    alert('Submit Asset');
-    console.log("AddCtrl insert data: ");
-    angular.forEach($scope.asset, function(value, index) {
-      console.log(index + ":" + value);
-    });
-
-    $scope.addAsset();
-          
-    
-  }
-
   $scope.cancel = function() {
     // it will clear the history stack and sets next view as root of the history stack.
     $ionicHistory.nextViewOptions({
@@ -497,14 +489,14 @@ angular.module('fixedApp.controllers', [])
     //$state.go("app.continue", {},  { reload: true });
   }
 
-  $scope.showAlert = function(asset) {
+  $scope.showAlert = function() {
       var alertPopup = $ionicPopup.alert({
          title: 'Asset Added',
-         template: '<div"><p>Asset Id: ' + asset.id + '</p>' +
-          '<p>Date: ' + asset.date + '</p>' + 
-          '<p>Location: ' + asset.location +'</p>' +
-          '<p>Comment: ' + asset.comment + '</p>' +
-          '<p>User: ' + asset.user + '</p></div>'
+         template: '<div"><p>Asset Id: ' + $scope.asset.id + '</p>' +
+          '<p>Date: ' + $filter('date')($scope.asset.date, "MM/dd/yyyy") + '</p>' + 
+          '<p>Location: ' + $scope.asset.location +'</p>' +
+          '<p>Comment: ' + $scope.asset.comment + '</p>' +
+          '<p>User: ' + $scope.asset.user + '</p></div>'
       });
      
       alertPopup.then(function(res) {
@@ -522,6 +514,11 @@ angular.module('fixedApp.controllers', [])
     //add asset to inventory file
     var query = "INSERT INTO fa_data (asset_id, location, comment, date, user) " + 
               "VALUES (?, ?, ?, ?, ?)";
+
+    console.log("addAsset data: ");
+    angular.forEach($scope.asset, function(value, index){
+      console.log(index + ":" + value);
+    });
 
     var date = $filter('date')($scope.asset.date, "MM/dd/yyyy");
     
@@ -549,14 +546,9 @@ angular.module('fixedApp.controllers', [])
 
           fs.insertLine(csv).then(function(result){
 
-            //alert('insert promise');
-            //$scope.asset = asset;
-            console.log("asset value: ");
-            angular.forEach(asset, function(value, index) {
-              console.log(index + ":" + value);
-            });
+            alert('insert promise');
 
-            $scope.showAlert(asset);
+            $scope.showAlert();
 
           });
 
@@ -571,10 +563,15 @@ angular.module('fixedApp.controllers', [])
 
 .controller('SendCtrl', function($scope, $state, $stateParams, $cordovaEmailComposer, $ionicHistory) {
   
+  if($stateParams.file == null )
+    var file = "fa_data.csv"
+  else
+    var file = $stateParams.file;
+
   $scope.email = {
     destination:"", 
     subject:"Stw Fixed Assets Inventory", 
-    body:"attached: fa_data.csv"
+    body:"attached: " + file
   };
 
   $scope.cancel = function() {
@@ -587,32 +584,40 @@ angular.module('fixedApp.controllers', [])
 
   }
 
-  $scope.sendEmail = function(email)
+  $scope.sendEmail = function()
   {
-    console.log(email);
-    alert(cordova.file.dataDirectory + "StwFixed/fa_data.csv");
+    angular.forEach($scope.email, function(value, index){
+      console.log(index + ":" + value);
+    });
+    //alert(cordova.file.dataDirectory + "StwFixed/fa_data.csv");
+    $stateParams.file
 
     if($stateParams.file == null )
       var file = cordova.file.dataDirectory + "StwFixed/fa_data.csv";
     else
-      var file = cordova.file.dataDirectory + "StwFixed/" + stateParams.file;
+      var file = cordova.file.dataDirectory + "StwFixed/" + $stateParams.file;
 
 
     var email = {
       //to: email.destination,
-      to: 'jwilliams@gmail.com',
-      cc: 'jwilliams@gmail.com',
+      to: $scope.email.destination,
+      cc: null,
       bcc: null,
       attachments: [
         file
       ],
-      subject: email.subject,
-      body: email.body,
+      subject: $scope.email.subject,
+      body: $scope.email.body,
       isHtml: true
     };
 
     $cordovaEmailComposer.open(email).then(null, function () {
-       // user cancelled email
+      console.log('email view dismissed');
+      $ionicHistory.nextViewOptions({
+        disableBack: true
+      });
+
+      $state.go("home.home");
     });
   }
 

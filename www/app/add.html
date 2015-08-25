@@ -1,6 +1,6 @@
 <ion-view view-title="Asset Details">
   <ion-content>
-  	<form name="addForm" ng-submit="submitAsset()" novalidate>
+  	<form name="addForm" novalidate>
 	  	<div class="list">
 			  <label class="item item-input">
 			    <span class="input-label">Date</span>
@@ -41,7 +41,7 @@
 					</button>
 			  	</div>
 			  	<div class="col">
-			  		<button class="button button-block button-dark" 
+			  		<button class="button button-block button-dark" ng-click="addAsset()"
 			  			ng-disabled="addForm.location.$invalid || 
 			  				addForm.date.$invalid || addForm.user.$invalid">
 					  Add to file

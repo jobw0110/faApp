@@ -10,21 +10,23 @@
   	<div class="row">
   		<div class="col col-100">
   			<form name="continueForm" novalidate>
-				<button class="button button-block button-positive" ng-click="scanBarcode();" ng-hide="inputBarcode">
+				<button class="button button-block button-balanced" ng-click="scanBarcode();" ng-hide="inputBarcode">
 				Scan
 				</button>
-				<div class="list card" ng-show="inputBarcode">
+				<div class="list card">
 				  <label class="item item-input">
-				    <input type="number" name="barcode" placeholder="Input Barcode" ng-model="barcode" show-focus="inputBarcode">
+				    <input type="text" name="barcode" placeholder="Scan Barcode" 
+				    	type-number=""
+				    	ng-model="barcode" 
+				    	show-focus="inputBarcode" required>
 				  </label>
 				</div>
-				<span style="color:red;position:relative;left:10px;" 
-				    ng-show="continueForm.barcode.$dirty && continueForm.barcode.$error.number">
+				<!-- <span style="color:red;position:relative;left:10px;" 
+				    ng-show="continueForm.barcode.$dirty && continueForm.barcode.$error.required">
 				    <i class="icon ion-alert">&nbsp; Invalid Barcode</i>
-			  	  </span>
+			  	  </span> -->
 				<button class="button button-block button-positive" 
-					ng-disabled="continueForm.barcode.$invalid"
-					ng-show="inputBarcode" 
+					ng-disabled="continueForm.barcode.$error.required" 
 					ng-click="submitScan(barcode);">
 				Finish
 				</button>

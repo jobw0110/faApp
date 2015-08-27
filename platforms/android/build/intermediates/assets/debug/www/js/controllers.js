@@ -375,6 +375,8 @@ angular.module('fixedApp.controllers', [])
 
   //alert('Continue Ctrl');
 
+  $scope.barcode = "";
+
   $scope.settings = $localStorage.getObject('settings');
 
   $scope.asset = {};
@@ -409,6 +411,14 @@ angular.module('fixedApp.controllers', [])
       });
    };
 
+  $scope.setBarcode = function(barcode) {
+    if(barcode == "")
+      return;
+
+    alert("Asset scanned successfully : " + barcode);
+    $scope.barcode = barcode;
+  }
+
   $scope.scanBarcode = function() {
 
     $cordovaBarcodeScanner
@@ -419,19 +429,32 @@ angular.module('fixedApp.controllers', [])
         angular.forEach(barcodeData, function(val, i){
           console.log(i + ":" + val);
         });
+
+        $scope.setBarcode(barcodeData.text);
+        
+        
+
       }, function(error) {
         // An error occurred
         console.log("Camera barcode scan error : " + error.message);
-      })
+      });
   }
 
   $scope.submitScan = function(barcode) {
     
-    if(barcode == undefined)
+    if(barcode == "")
     {
       alert('please scan a barcode to continue');
       return;
     }
+
+    if($filter('date')(barcode, 0) == 0)
+    {
+      alert('please enter a valid barcode')
+      $scope.barcode = "";
+      return;
+    }
+    
 
 
     if($scope.editScan || $scope.settings.user == "" || $scope.settings.location == "")

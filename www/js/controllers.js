@@ -11,6 +11,15 @@ angular.module('fixedApp.controllers', [])
   };    
 })
 
+.directive('typeNumber', function() {
+  return function(scope, element, attrs) {
+    scope.$watch(function(scope){return scope.barcode}, 
+      function (newValue) { 
+       element[0].value = element[0].value.replace(/[^0-9]/g,'');
+      });
+  };    
+})
+
 .factory('$localStorage', ['$window', function($window) {
   return {
     set: function(key, value) {
@@ -375,6 +384,8 @@ angular.module('fixedApp.controllers', [])
 
   //alert('Continue Ctrl');
 
+  $scope.barcode = "";
+
   $scope.settings = $localStorage.getObject('settings');
 
   $scope.asset = {};
@@ -409,6 +420,14 @@ angular.module('fixedApp.controllers', [])
       });
    };
 
+  $scope.setBarcode = function(barcode) {
+    if(barcode == "")
+      return;
+
+    alert("Asset scanned successfully : " + barcode);
+    $scope.barcode = barcode;
+  }
+
   $scope.scanBarcode = function() {
 
     $cordovaBarcodeScanner
@@ -419,20 +438,32 @@ angular.module('fixedApp.controllers', [])
         angular.forEach(barcodeData, function(val, i){
           console.log(i + ":" + val);
         });
+
+        $scope.setBarcode(barcodeData.text);
+        
+        
+
       }, function(error) {
         // An error occurred
         console.log("Camera barcode scan error : " + error.message);
-      })
+      });
   }
 
   $scope.submitScan = function(barcode) {
     
-    if(barcode == undefined)
+    if(barcode == "")
     {
       alert('please scan a barcode to continue');
       return;
     }
 
+    /*if($filter('number')(barcode, 0) == 0)
+    {
+  
+      alert('please enter a valid barcode');
+      $scope.barcode = "";
+      return;
+    }*/
 
     if($scope.editScan || $scope.settings.user == "" || $scope.settings.location == "")
     {
@@ -661,8 +692,8 @@ angular.module('fixedApp.controllers', [])
 
     var file = path + fileName;
 
-    alert("newPath :" + newPath);
-    alert("path :" + path);
+    //alert("newPath :" + newPath);
+    //alert("path :" + path);
 
     if(cordova.file.externalRootDirectory != null)
     {
